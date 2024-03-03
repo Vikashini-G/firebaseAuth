@@ -10,7 +10,9 @@ import Firebase
 @main
 struct checkFirebaseApp: App {
     init(){
+        
         FirebaseApp.configure()
+        
     }
     var body: some Scene {
         WindowGroup {
