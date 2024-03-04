@@ -11,27 +11,35 @@ final class SignInEmailViewModel: ObservableObject{
     @Published var email = ""
     @Published var password = ""
     
-    func signIn(){
+    func signUp() async throws{
         guard !email.isEmpty, !password.isEmpty else{
             print("No email or psswd found")
             return
         }
-        Task {
-            do {
-                let returnedUserData = try await AuthenticationManager.shared.createUser(email: email, password: password)
-                print("Success")
-                print(returnedUserData)
-            } catch {
-                print("Error: \(error)")
-            }
-        }
+        try await AuthenticationManager.shared.createUser(email: email, password: password)
+//        Task {
+//            do {
+//                let returnedUserData = try await AuthenticationManager.shared.createUser(email: email, password: password)
+//                print("Success")
+//                print(returnedUserData)
+//            } catch {
+//                print("Error: \(error)")
+//            }
+//        }
 
     }
-    
+    func signIn() async throws{
+        guard !email.isEmpty, !password.isEmpty else{
+            print("No email or psswd found")
+            return
+        }
+        try await AuthenticationManager.shared.signInUser(email: email, password: password)
+    }
 }
 
 struct signInSwiftUIView: View {
     @StateObject private var viewModel = SignInEmailViewModel()
+    @Binding var showSignInView: Bool
     var body: some View {
         VStack{
             TextField("Email...", text: $viewModel.email)
@@ -42,8 +50,24 @@ struct signInSwiftUIView: View {
                 .padding()
                 .background(Color.gray.opacity(0.4))
                 .cornerRadius(20)
-            Button{
-                viewModel.signIn()
+            Button{ //make em seperate buttons
+                Task{
+                    do{
+                        try await viewModel.signUp()
+                        showSignInView = false
+                        return
+                    } catch{
+                        print(error)
+                    }
+                    
+                    do{
+                        try await viewModel.signIn()
+                        showSignInView = false
+                        return
+                    } catch{
+                        print(error)
+                    }
+                }
             } label: {
                 Text("Sign in")
                     .font(.headline)
@@ -61,6 +85,6 @@ struct signInSwiftUIView: View {
 
 #Preview {
     NavigationStack{
-        signInSwiftUIView()
+        signInSwiftUIView(showSignInView: .constant(false))
     }
 }

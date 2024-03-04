@@ -31,6 +31,16 @@ struct settingsSwiftUIView: View {
                     }
                 }
             }
+            Button("Result password"){
+                Task{
+                    do {
+                        try viewModel.signOut()
+                        showSignInView = true
+                    } catch{
+                        print(error)
+                    }
+                }
+            }
         }
         .navigationTitle("Settings")
     }

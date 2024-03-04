@@ -23,7 +23,7 @@ struct rootSwiftUIView: View {
         }
         .fullScreenCover(isPresented: $showSignInView){
             NavigationStack{
-                authenticationSwiftUIView()
+                authenticationSwiftUIView(showSignInView: $showSignInView)
             }
         }
     }
